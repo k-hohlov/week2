@@ -2,20 +2,20 @@
 
 
 // 1.
-interface interfaceTarif
+interface interfaceTariff
 {
-    public function GetPrice(): int;
+    public function getPrice(): int;
     public function addService(interfaceService $service);
 }
 
 // 2.
 interface interfaceService
 {
-    public function applyService(interfaceTarif $tariff, &$price);
+    public function applyService(interfaceTariff $tariff, $price);
 }
 
 // 3.
-abstract class Tariff implements interfaceTarif
+abstract class Tariff implements interfaceTariff
 {
     protected $priceBykm;
     protected $priceByTime;
@@ -24,7 +24,7 @@ abstract class Tariff implements interfaceTarif
     protected $services = [];
 
 
-    public $price_total;
+    public $priceTotal;
 
     public function __construct(int $dist, int $time)
     {
@@ -32,23 +32,23 @@ abstract class Tariff implements interfaceTarif
         $this->time = $time;
     }
 
-    public function GetPrice() : int
+    public function getPrice() : int
     {
-        $price_total = ($this->distance * $this->priceBykm) + ($this->time * $this->priceByTime);
+        $this->priceTotal = ($this->distance * $this->priceBykm) + ($this->time * $this->priceByTime);
 
         foreach ($this->services as $service) {
-            $service->applyService($this, $price_total);
+            $this->priceTotal = $service->applyService($this, $this->priceTotal);
         }
-        return $price_total;
+        return $this->priceTotal;
     }
 
-    public function AddService(interfaceService $service) : interfaceTarif
+    public function addService(interfaceService $service) : interfaceTariff
     {
         array_push($this->services, $service);
         return $this;
     }
 
-    public function GetMinutes()
+    public function getMinutes()
     {
         return $this->time;
     }
@@ -80,9 +80,9 @@ class ServiceDriver implements interfaceService {
 
     protected $servicePrice = 100;
 
-    public function applyService($tariff, &$price)
+    public function applyService($tariff, $price)
     {
-        return $price = $price + $this->servicePrice;
+        return $price + $this->servicePrice;
 
     }
 }
@@ -91,9 +91,9 @@ class ServiceGPS implements interfaceService {
 
     protected $priceByTime = 15;
 
-    public function applyService($tariff, &$price)
+    public function applyService($tariff, $price)
     {
         $hours = ceil($tariff->getMinutes() / 60);
-        $price += $this->priceByTime * $hours;
+        return $price + $this->priceByTime * $hours;
     }
 }

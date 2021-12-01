@@ -21,17 +21,18 @@ $user = GetUser($email);
 
 if ($user) {
     /* пользователь есть, необходимо создать заказ и увеличить счетчик заказов */
-    $orderId = NewOrder($user['id'],$address, $orderOptions);
+    //$orderId = NewOrder($user['id'],$address, $orderOptions);
     UpdateUserOrders($user['id']);
     $orderNumber = $user['orders_count'] + 1;
+    $userId = $user['id'];
 } else {
     /* пользователя нет, создаем пользователя и заказ */
-    $NewUserId = CreateUser($email,$name,$phone);
-    $orderId = NewOrder($NewUserId,$address, $orderOptions);
+    $userId = CreateUser($email,$name,$phone);
+    //$orderId = NewOrder($NewUserId,$address, $orderOptions);
     $orderNumber = 1;
 }
 
-
+$orderId = NewOrder($userId,$address, $orderOptions);
 
 echo "Спасибо, ваш заказ будет доставлен по адресу: $address<br>
 Номер вашего заказа: $orderId <br>
